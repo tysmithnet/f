@@ -5,11 +5,13 @@ verify_ssl = true
 
 [dev-packages]
 pylint = "*"
+autopep8 = "*"
 
 [packages]
 pytest = "*"
 npyscreen = "*"
 urwid = "*"
+pubmarine = "*"
 
 [requires]
 python_version = "3.7"
