@@ -1,43 +1,21 @@
+import urwid
+buffer = []
 
-import npyscreen
-class TestApp(npyscreen.NPSApp):
-    def main(self):
-        # These lines create the form and populate it with widgets.
-        # A fairly complex screen in only 8 or so lines of code - a line for each control.
-        F  = npyscreen.Form(name = "Welcome to Npyscreen",)
-        t  = F.add(npyscreen.TitleText, name = "Text:",)
-        fn = F.add(npyscreen.TitleFilename, name = "Filename:")
-        fn2 = F.add(npyscreen.TitleFilenameCombo, name="Filename2:")
-        dt = F.add(npyscreen.TitleDateCombo, name = "Date:")
-        s  = F.add(npyscreen.TitleSlider, out_of=12, name = "Slider")
-        ml = F.add(npyscreen.MultiLineEdit,
-               value = """try typing here!\nMutiline text, press ^R to reformat.\n""",
-               max_height=5, rely=9)
-        ms = F.add(npyscreen.TitleSelectOne, max_height=4, value = [1,], name="Pick One",
-                values = ["Option1","Option2","Option3"], scroll_exit=True)
-        ms2= F.add(npyscreen.TitleMultiSelect, max_height =-2, value = [1,], name="Pick Several",
-                values = ["Option1","Option2","Option3"], scroll_exit=True)
+palette = [('I say', 'default,bold', 'default', 'bold'),]
+ask = urwid.Edit(('I say', u"What is your name?\n"))
+reply = urwid.Text(u"")
+button = urwid.Button(u'Exit')
+div = urwid.Divider()
+pile = urwid.Pile([ask, div, reply, div, button])
+top = urwid.Filler(pile, valign='top')
 
-        # This lets the user interact with the Form.
-        F.edit()
+def on_ask_change(edit, new_edit_text):
+    reply.set_text(('I say', u"Nice to meet you, %s" % new_edit_text))
 
-        print(ms.get_selected_objects())
+def on_exit_clicked(button):
+    raise urwid.ExitMainLoop()
 
-if __name__ == "__main__":
-    App = TestApp()
-    App.run()
+urwid.connect_signal(ask, 'change', on_ask_change)
+urwid.connect_signal(button, 'click', on_exit_clicked)
 
-"""
-f
- - get data
- - update buffer
- - apply current filter
- - update output buffer if necessary
-
- on filter change:
-  - kill subprocess if necessary
-  - clear output buffer
-  - start new filter process for current data set
-  - update display
-  - if more data since update goto 0, but only new data and update the display
-"""
+urwid.MainLoop(top, palette).run()
