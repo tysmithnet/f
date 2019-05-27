@@ -1,62 +1,41 @@
 package main
 
 import (
-	"bufio"
-	"io"
+	"fmt"
 	"log"
-	"os"
 
-	"github.com/marcusolsson/tui-go"
+	"github.com/jroimartin/gocui"
 )
 
-var buffer []string
+func main() {
+	g, err := gocui.NewGui(gocui.OutputNormal)
+	if err != nil {
+		log.Panicln(err)
+	}
+	defer g.Close()
 
-/* Function to run the groutine to run for stdin read */
-func read(r io.Reader) <-chan string {
-	lines := make(chan string)
-	go func() {
-		defer close(lines)
-		scan := bufio.NewScanner(r)
-		for scan.Scan() {
-			s := scan.Text()
-			lines <- s
-		}
-	}()
-	return lines
+	g.SetManagerFunc(layout)
+
+	if err := g.SetKeybinding("", gocui.KeyCtrlC, gocui.ModNone, quit); err != nil {
+		log.Panicln(err)
+	}
+
+	if err := g.MainLoop(); err != nil && err != gocui.ErrQuit {
+		log.Panicln(err)
+	}
 }
 
-func main() {
-	ch := read(os.Stdin) //Reading from Stdin
-	go func() {
-		for m := range ch {
-			buffer = append(buffer, m)
+func layout(g *gocui.Gui) error {
+	maxX, maxY := g.Size()
+	if v, err := g.SetView("hello", maxX/2-7, maxY/2, maxX/2+7, maxY/2+2); err != nil {
+		if err != gocui.ErrUnknownView {
+			return err
 		}
-	}()
-
-	output := tui.NewVBox()
-	outputScroll := tui.NewScrollArea(output)
-	outputScroll.SetAutoscrollToBottom(true)
-	outputBox := tui.NewVBox(outputScroll)
-	outputBox.SetBorder(true)
-	input := tui.NewEntry()
-	input.SetFocused(true)
-	input.SetSizePolicy(tui.Expanding, tui.Maximum)
-	input.OnChanged(func(e *tui.Entry) {
-		output.Append(tui.NewLabel(e.Text()))
-	})
-	inputBox := tui.NewHBox(input)
-	inputBox.SetBorder(true)
-	inputBox.SetSizePolicy(tui.Expanding, tui.Maximum)
-	root := tui.NewVBox(outputBox, inputBox)
-	ui, err := tui.New(root)
-	if err != nil {
-		log.Fatal(err)
+		fmt.Fprintln(v, "Hello world!")
 	}
-	ui.SetKeybinding("Esc", func() {
-		ui.Quit()
-	})
+	return nil
+}
 
-	if err := ui.Run(); err != nil {
-		log.Fatal(err)
-	}
+func quit(g *gocui.Gui, v *gocui.View) error {
+	return gocui.ErrQuit
 }
