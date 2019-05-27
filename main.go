@@ -1,8 +1,11 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"io"
 	"log"
+	"time"
 
 	c "github.com/jroimartin/gocui"
 	"github.com/pkg/errors"
@@ -13,8 +16,29 @@ const (
 	ih = 3
 )
 
+var buffer []string
+
+func read(r io.Reader) <-chan string {
+	lines := make(chan string)
+	go func() {
+		defer close(lines)
+		scan := bufio.NewScanner(r)
+		for scan.Scan() {
+			s := scan.Text()
+			lines <- s
+		}
+	}()
+	return lines
+}
+
 // Set up the widgets and run the event loop.
 func runGocui() {
+	ticker := time.NewTicker(500 * time.Millisecond)
+	go func() {
+		for t := range ticker.C {
+			fmt.Println("Tick at", t)
+		}
+	}()
 	// Create a new GUI.
 	g, err := c.NewGui(c.OutputNormal)
 	if err != nil {
