@@ -13,6 +13,7 @@ pytest = "*"
 npyscreen = "*"
 urwid = "*"
 pubmarine = "*"
+ptvsd = "*"
 
 [requires]
 python_version = "3.7"
