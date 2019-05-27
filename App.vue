@@ -12,13 +12,7 @@
           You'll also notice there's no style inheritance. So background and foreground colors
           need to be specified for every element. :(
     -->
-    <box style='bg: #3FA767; fg: #F9EC31;' width="100%" height="9%">
-      <text
-        style='bg: #3FA767; fg: #F9EC31; bold: true;'
-        top="center" left="center"
-        content="AlligatorIO - Feed Readerish Thing"
-      />
-    </box>
+    
     <box style='bg: black; fg: #3FA767' width="100%" height="92%" top="9%">
       <!-- Render loading text if the feed hasn't loaded yet. -->
       <text v-if="isLoading"
@@ -31,14 +25,17 @@
             :keys="true" and :mouse="true" enable keyboard and mouse
             navigation in the list.
       -->
-      <list v-else
-        height="100%" width="100%"
-        :border="{}"
-        :style="listStyle"
-        :keys="true" :mouse="true"
-        :items="feedTitles"
-        @select="handleListSelect"
-      />
+      <box v-else>
+          <textbox height="100%" width="100%" />
+          <list
+            height="100%" width="100%"
+            :border="{}"
+            :style="listStyle"
+            :keys="true" :mouse="true"
+            :items="feedTitles"
+            @select="handleListSelect"
+        />
+      </box>
     </box>
   </screen>
 </template>
@@ -91,6 +88,9 @@ export default {
       const feedItem = this.feed.items[feedIndex];
 
       opn(feedItem.link);
+    },
+    handleSearchChange(event) {
+        
     }
   },
 
