@@ -1,7 +1,7 @@
 import React from 'react'
 import { Form, Field } from 'react-final-form'
 import { AppContext, Box, Color, Text } from 'ink'
-import TextInput from '../components/TextInput'
+import TextInput from "ink-text-input";
 import SelectInput from '../components/SelectInput'
 import MultiSelectInput from '../components/MultiSelectInput'
 import Error from '../components/Error'
@@ -40,9 +40,9 @@ const fields = [
 		format: value =>
 			value
 				? value
-						.toLowerCase()
-						.replace(/[^a-z \\-]/g, '')
-						.replace(/ /g, '-')
+					.toLowerCase()
+					.replace(/[^a-z \\-]/g, '')
+					.replace(/ /g, '-')
 				: '',
 		placeholder: 'my-awesome-project',
 		Input: TextInput
@@ -56,8 +56,8 @@ const fields = [
 			!value
 				? 'Required'
 				: semver.valid(value)
-				? undefined
-				: 'Invalid semantic version',
+					? undefined
+					: 'Invalid semantic version',
 		Input: TextInput
 	},
 	{
@@ -91,93 +91,23 @@ const fields = [
 	}
 ]
 
+const values = "db0,cache1,html,web0,web1,web3,cache0,dbright,tsmith,builduser,dwilson".split(",");
+
+
 /// CliForm
 export default function CliForm() {
-	const [activeField, setActiveField] = React.useState(0)
-	const [submission, setSubmission] = React.useState()
-	return submission ? (
-		<AppContext.Consumer>
-			{({ exit }) => {
-				setTimeout(exit)
-				return (
-					<Box flexDirection="column" marginTop={1}>
-						<Color blue>
-							<Text bold>Values submitted:</Text>
-						</Color>
-						<Box>{JSON.stringify(submission, undefined, 2)}</Box>
-					</Box>
-				)
-			}}
-		</AppContext.Consumer>
-	) : (
-		<Form onSubmit={setSubmission}>
-			{({ handleSubmit, validating }) => (
-				<Box flexDirection="column">
-					{fields.map(
-						(
-							{
-								name,
-								label,
-								placeholder,
-								format,
-								validate,
-								Input,
-								inputConfig
-							},
-							index
-						) => (
-							<Field name={name} key={name} format={format} validate={validate}>
-								{({ input, meta }) => (
-									<Box flexDirection="column">
-										<Box>
-											<Text bold={activeField === index}>{label}: </Text>
-											{activeField === index ? (
-												<Input
-													{...input}
-													{...inputConfig}
-													placeholder={placeholder}
-													onSubmit={() => {
-														if (meta.valid && !validating) {
-															setActiveField(value => value + 1) // go to next field
-															if (activeField === fields.length - 1) {
-																// last field, so submit
-																handleSubmit()
-															}
-														} else {
-															input.onBlur() // mark as touched to show error
-														}
-													}}
-												/>
-											) : (
-												(input.value && <Text>{input.value}</Text>) ||
-												(placeholder && <Color gray>{placeholder}</Color>)
-											)}
-											{validating && name === 'name' && (
-												<Box marginLeft={1}>
-													<Color yellow>
-														<Spinner type="dots" />
-													</Color>
-												</Box>
-											)}
-											{meta.invalid && meta.touched && (
-												<Box marginLeft={2}>
-													<Color red>✖</Color>
-												</Box>
-											)}
-											{meta.valid && meta.touched && meta.inactive && (
-												<Box marginLeft={2}>
-													<Color green>✔</Color>
-												</Box>
-											)}
-										</Box>
-										{meta.error && meta.touched && <Error>{meta.error}</Error>}
-									</Box>
-								)}
-							</Field>
-						)
-					)}
-				</Box>
-			)}
-		</Form>
+	const [searchValue, setSearchValue] = React.useState("");
+	const toList = values.filter(x => x.indexOf(searchValue) > -1).map(x => {
+		return <Box key={x}>{x}</Box>;
+	})
+	return (
+		<React.Fragment>
+			<Box>
+				Input: <TextInput value={searchValue} onChange={setSearchValue} />
+			</Box>
+			<Box>
+				{toList}
+			</Box>
+		</React.Fragment>
 	)
 }
