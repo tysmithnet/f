@@ -1,25 +1,19 @@
-var fs = require("fs");
-var termkit = require("terminal-kit");
-var term = termkit.terminal;
+const process = require("process");
+const readline = require("readline");
+var blessed = require('blessed')
+  , contrib = require('blessed-contrib')
+  , screen = blessed.screen()
+  , grid = new contrib.grid({rows: 12, cols: 12, screen: screen})
+  , map = grid.set(0, 0, 4, 4, contrib.map, {label: 'World Map'})
+  , box = grid.set(4, 4, 4, 4, blessed.box, {content: 'My Box'})
 
-var autoCompleter = function autoCompleter(inputString, callback) {
-    fs.readdir(__dirname, function (error, files) {
-        callback(undefined, termkit.autoComplete(files, inputString, true));
-    });
-};
+screen.render()
 
-term("Choose a file: ");
+const rl = readline.createInterface({
+    input: process.stdin,
+});
 
-term.inputField(
-    { autoComplete: autoCompleter, autoCompleteMenu: true },
-    function (error, input) {
-        if (error) {
-            term.red.bold("\nAn error occurs: " + error + "\n");
-        }
-        else {
-            term.green("\nYour file is '%s'\n", input);
-        }
-
-        process.exit();
-    }
-);
+rl.on("line", (line) => {
+    box.setContent(line);
+    screen.render();
+});
