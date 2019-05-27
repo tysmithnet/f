@@ -1,14 +1,25 @@
-const process = require("process");
-const readline = require("readline");
-const term = require( 'terminal-kit' ).terminal;
+var fs = require("fs");
+var termkit = require("terminal-kit");
+var term = termkit.terminal;
 
-const buffer = [];
+var autoCompleter = function autoCompleter(inputString, callback) {
+    fs.readdir(__dirname, function (error, files) {
+        callback(undefined, termkit.autoComplete(files, inputString, true));
+    });
+};
 
-const rl = readline.createInterface({
-    input: process.stdin,
-});
+term("Choose a file: ");
 
-rl.on("line", (line) => {
-    term.red(line);
-});
+term.inputField(
+    { autoComplete: autoCompleter, autoCompleteMenu: true },
+    function (error, input) {
+        if (error) {
+            term.red.bold("\nAn error occurs: " + error + "\n");
+        }
+        else {
+            term.green("\nYour file is '%s'\n", input);
+        }
 
+        process.exit();
+    }
+);
