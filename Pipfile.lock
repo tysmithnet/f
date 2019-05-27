@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "2ae88aba441daec6e5e9e9b2790f4e684a98273ef43ec8be7c1fe079c8d2efe0"
+            "sha256": "679a5694ffb77f460332fec6cac1e3b6d0d6cca7de3c3d09349bed6b76b11c23"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -37,6 +37,13 @@
             ],
             "markers": "python_version > '2.7'",
             "version": "==7.0.0"
+        },
+        "npyscreen": {
+            "hashes": [
+                "sha256:622ee0f9a5dae946e635b7c6e0f6d65e1ed3c9ea0d20b89dab7f58d580e5126e"
+            ],
+            "index": "pypi",
+            "version": "==4.10.5"
         },
         "pluggy": {
             "hashes": [
